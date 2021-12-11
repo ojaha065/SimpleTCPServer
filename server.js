@@ -1,25 +1,28 @@
 "use strict";
 
 const net = require("net");
+const fs = require("fs");
 
 const host = "127.0.0.1";
 const port = 22396;
 const response = "SimpleTCPServer";
 
+const logFile = fs.createWriteStream("./server.log", {flags: "a"});
+
 const server = net.createServer(c => {
-    console.info(`New connection from ${c.remoteAddress}; Remote port: ${c.remotePort};`);
+    log(`New connection from ${c.remoteAddress}; Remote port: ${c.remotePort};`);
 
     c.on("data", data => {
-        console.debug(`Data received from ${c.remoteAddress}: ${data}`);
+        log(`Data received from ${c.remoteAddress}: ${data}`);
         c.write(response);
     });
 
     c.on("error", error => {
-        console.error(`${error.name}: ${error.message}`);
+        log(`${error.name}: ${error.message}`);
     });
 
     c.once("close", () => {
-        console.debug(`Connection with ${c.remoteAddress} closed`);
+        log(`Connection with ${c.remoteAddress} closed`);
     });
 });
 
@@ -28,5 +31,10 @@ server.listen({
     port
 }, () => {
     const address = server.address();
-    console.info(`Server started listening to ${address.address}:${address.port}`);
+    log(`Server started listening to ${address.address}:${address.port}`);
 });
+
+function log(message) {
+    console.log(message);
+    logFile.write(`${message}\n`);
+}
