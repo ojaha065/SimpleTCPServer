@@ -36,5 +36,7 @@ server.listen({
 
 function log(message) {
     console.log(message);
-    logFile.write(`${message}\n`);
+
+    const now = new Date();
+    logFile.write(`${now.getHours().toString().padStart(2, "0")}:${now.getMinutes().toString().padStart(2, "0")}:${now.getSeconds().toString().padStart(2, "0")} --- ${message}\n`);
 }
